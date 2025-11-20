@@ -1,4 +1,18 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  RiArrowGoBackLine,
+  RiArrowGoForwardLine,
+  RiBold,
+  RiItalic,
+  RiUnderline,
+  RiStrikethrough,
+  RiH1,
+  RiH2,
+  RiH3,
+  RiListUnordered,
+  RiListOrdered,
+  RiTable2,
+} from "react-icons/ri/index.js";
 import { createDocexEditor } from "../core/createDocexEditor";
 import { EditorController } from "../core/editorController";
 import "./example.css";
@@ -27,7 +41,9 @@ const initialContent = `
     .map(
       (_, idx) => `
         <p>
-          Paragraph ${idx + 1}: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          Paragraph ${
+            idx + 1
+          }: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
           Ut ultricies orci at dolor pharetra, sed interdum mi bibendum. Duis vehicula
           ligula vitae neque gravida ullamcorper. Sed cursus ligula sit amet est
           scelerisque, id tempor leo viverra.
@@ -39,80 +55,182 @@ const initialContent = `
 
 export default function App() {
   const controller = useMemo(() => new EditorController(), []);
-  const DocexEditor = useMemo(() => createDocexEditor(controller), [controller]);
+  const DocexEditor = useMemo(
+    () => createDocexEditor(controller),
+    [controller]
+  );
 
-  const [pageMargin, setPageMargin] = useState(96);
-  const [pageGap, setPageGap] = useState(60);
-  const [pagePadding, setPagePadding] = useState(96);
+  const [pageMargin] = useState(96);
+  const [pageGap] = useState(60);
+  const [, forceToolbarUpdate] = useState(0);
+  const [pagePadding] = useState(96);
 
-  const pxToCm = (value: number) => ((value / 96) * 2.54).toFixed(1);
+  // Re-render on editor state changes so active toolbar buttons update
+  useEffect(() => {
+    return controller.onStateChange(() => {
+      // Force a re-render so active classes update
+      forceToolbarUpdate((v) => v + 1);
+    });
+  }, [controller]);
 
   return (
     <div className="app-shell">
       <header className="app-header">
         <div>
           <h1>DocEx Core</h1>
-          <p>Pagination + DOCX export extracted from the main product.</p>
+          <p>Tiptap + Pagination + DOCX export</p>
         </div>
-        <button
-          className="export-button"
-          onClick={() => controller.exportToDocx("docex-core-demo.docx", true)}
-        >
-          Export DOCX
-        </button>
+        <div className="header-actions">
+          <button
+            className="export-button"
+            onClick={() =>
+              controller.exportToDocx("docex-core-demo.docx", true)
+            }
+          >
+            Export DOCX
+          </button>
+        </div>
       </header>
 
       <section className="control-panel">
-        <div className="format-group">
-          <span className="group-title">Formatting</span>
-          <div className="button-row">
-            <button onClick={() => controller.toggleBold()}>Bold</button>
-            <button onClick={() => controller.toggleItalic()}>Italic</button>
-            <button onClick={() => controller.toggleUnderline()}>Underline</button>
-            <button onClick={() => controller.toggleStrike()}>Strike</button>
-            <button onClick={() => controller.toggleHeading(1)}>H1</button>
-            <button onClick={() => controller.toggleHeading(2)}>H2</button>
-            <button onClick={() => controller.toggleHeading(3)}>H3</button>
-            <button onClick={() => controller.toggleBulletList()}>Bullet List</button>
-            <button onClick={() => controller.toggleOrderedList()}>Numbered List</button>
-            <button onClick={() => controller.insertTable(3, 3)}>Insert Table</button>
+        <div className="toolbar">
+          <div className="toolbar-group">
+            <button
+              className="tool-button"
+              title="Undo"
+              onClick={() => controller.undo()}
+            >
+              <RiArrowGoBackLine />
+            </button>
+            <button
+              className="tool-button"
+              title="Redo"
+              onClick={() => controller.redo()}
+            >
+              <RiArrowGoForwardLine />
+            </button>
           </div>
-        </div>
 
-        <div className="format-group">
-          <span className="group-title">Layout</span>
-          <div className="slider-row">
-            <label>
-              Margin ({pxToCm(pageMargin)}cm)
-              <input
-                type="range"
-                min={40}
-                max={160}
-                value={pageMargin}
-                onChange={(event) => setPageMargin(Number(event.target.value))}
-              />
-            </label>
-            <label>
-              Padding ({pxToCm(pagePadding)}cm)
-              <input
-                type="range"
-                min={40}
-                max={160}
-                value={pagePadding}
-                onChange={(event) => setPagePadding(Number(event.target.value))}
-              />
-            </label>
-            <label>
-              Page Gap ({Math.round(pageGap)}px)
-              <input
-                type="range"
-                min={20}
-                max={120}
-                value={pageGap}
-                onChange={(event) => setPageGap(Number(event.target.value))}
-              />
-            </label>
+          <div className="toolbar-sep" />
+
+          <div className="toolbar-group">
+            <button
+              className={`tool-button ${
+                controller.isActive("bold") ? "active" : ""
+              }`}
+              aria-pressed={controller.isActive("bold")}
+              title="Bold"
+              onClick={() => controller.toggleBold()}
+            >
+              <RiBold />
+            </button>
+            <button
+              className={`tool-button ${
+                controller.isActive("italic") ? "active" : ""
+              }`}
+              aria-pressed={controller.isActive("italic")}
+              title="Italic"
+              onClick={() => controller.toggleItalic()}
+            >
+              <RiItalic />
+            </button>
+            <button
+              className={`tool-button ${
+                controller.isActive("underline") ? "active" : ""
+              }`}
+              aria-pressed={controller.isActive("underline")}
+              title="Underline"
+              onClick={() => controller.toggleUnderline()}
+            >
+              <RiUnderline />
+            </button>
+            <button
+              className={`tool-button ${
+                controller.isActive("strike") ? "active" : ""
+              }`}
+              aria-pressed={controller.isActive("strike")}
+              title="Strikethrough"
+              onClick={() => controller.toggleStrike()}
+            >
+              <RiStrikethrough />
+            </button>
           </div>
+
+          <div className="toolbar-sep" />
+
+          <div className="toolbar-group">
+            <button
+              className={`tool-button ${
+                controller.isHeadingActive(1) ? "active" : ""
+              }`}
+              aria-pressed={controller.isHeadingActive(1)}
+              title="Heading 1"
+              onClick={() => controller.toggleHeading(1)}
+            >
+              <RiH1 />
+            </button>
+            <button
+              className={`tool-button ${
+                controller.isHeadingActive(2) ? "active" : ""
+              }`}
+              aria-pressed={controller.isHeadingActive(2)}
+              title="Heading 2"
+              onClick={() => controller.toggleHeading(2)}
+            >
+              <RiH2 />
+            </button>
+            <button
+              className={`tool-button ${
+                controller.isHeadingActive(3) ? "active" : ""
+              }`}
+              aria-pressed={controller.isHeadingActive(3)}
+              title="Heading 3"
+              onClick={() => controller.toggleHeading(3)}
+            >
+              <RiH3 />
+            </button>
+          </div>
+
+          <div className="toolbar-sep" />
+
+          <div className="toolbar-group">
+            <button
+              className={`tool-button ${
+                controller.isActive("bulletList") ? "active" : ""
+              }`}
+              aria-pressed={controller.isActive("bulletList")}
+              title="Bulleted list"
+              onClick={() => controller.toggleBulletList()}
+            >
+              <RiListUnordered />
+            </button>
+            <button
+              className={`tool-button ${
+                controller.isActive("orderedList") ? "active" : ""
+              }`}
+              aria-pressed={controller.isActive("orderedList")}
+              title="Numbered list"
+              onClick={() => controller.toggleOrderedList()}
+            >
+              <RiListOrdered />
+            </button>
+          </div>
+
+          <div className="toolbar-sep" />
+
+          <div className="toolbar-group">
+            <button
+              className="tool-button"
+              title="Insert table"
+              onClick={() => controller.insertTable(3, 3)}
+            >
+              <RiTable2 />
+            </button>
+          </div>
+
+          <div className="toolbar-sep" />
+
+          {/* layout controls removed */}
         </div>
       </section>
 

@@ -14,6 +14,7 @@ export interface IEditorController {
   init(editor: Editor): void;
 
   isActive(name: ActiveNodeName): boolean;
+  isHeadingActive(level: 1 | 2 | 3): boolean;
 
   toggleBold(): void;
   toggleItalic(): void;
@@ -44,14 +45,32 @@ export interface IEditorController {
 }
 export class EditorController implements IEditorController {
   private editor: Editor | null = null;
+  private stateListeners = new Set<() => void>();
 
   /** Called by the React wrapper once the Editor is created */
   init(editor: Editor) {
     this.editor = editor;
+    const notify = () => {
+      for (const listener of this.stateListeners) listener();
+    };
+    editor.on("update", notify);
+    editor.on("selectionUpdate", notify);
+    editor.on("transaction", notify);
+    // Trigger initial sync so toolbar reflects current selection immediately
+    notify();
   }
 
   isActive(name: ActiveNodeName): boolean {
     return this.editor?.isActive(name) ?? false;
+  }
+  isHeadingActive(level: 1 | 2 | 3): boolean {
+    return this.editor?.isActive("heading", { level }) ?? false;
+  }
+
+  /** Subscribe to editor state changes (selection/transaction/update) */
+  onStateChange(listener: () => void): () => void {
+    this.stateListeners.add(listener);
+    return () => this.stateListeners.delete(listener);
   }
 
   /** Marks */
