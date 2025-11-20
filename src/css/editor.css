@@ -1,0 +1,149 @@
+:root {
+  --doc-height: 29.7cm;
+  --editor-padding: 96px;
+  --editor-margin: 0px;
+}
+
+/* A4 editor container */
+.editor {
+  padding: 0 var(--editor-padding);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* FONTS */
+@font-face {
+  font-family: "Aptos";
+  src: url("https://db.onlinewebfonts.com/t/7dd5f4bf5d38875ca1822a830b6e6fe4.eot");
+  src: url("https://db.onlinewebfonts.com/t/7dd5f4bf5d38875ca1822a830b6e6fe4.eot?#iefix")
+      format("embedded-opentype"),
+    url("https://db.onlinewebfonts.com/t/7dd5f4bf5d38875ca1822a830b6e6fe4.woff2")
+      format("woff2"),
+    url("https://db.onlinewebfonts.com/t/7dd5f4bf5d38875ca1822a830b6e6fe4.woff")
+      format("woff"),
+    url("https://db.onlinewebfonts.com/t/7dd5f4bf5d38875ca1822a830b6e6fe4.ttf")
+      format("truetype"),
+    url("https://db.onlinewebfonts.com/t/7dd5f4bf5d38875ca1822a830b6e6fe4.svg#Aptos")
+      format("svg");
+}
+
+.editor {
+  font-family: "Aptos";
+  font-size: 12pt;
+  line-height: 15.96pt;
+  font-weight: 400;
+}
+
+.editor > h1,
+.editor > h2,
+.editor > h3,
+.editor > h4,
+.editor > h5,
+.editor > h6,
+th > h1,
+th > h2,
+th > h3,
+th > h4,
+th > h5,
+th > h6 {
+  line-height: 1.2em; /* 1.2em is the default line height for h1-h6, might be problematic */
+}
+/* First element inside the editor */
+.editor > *:first-child {
+  margin-top: var(--editor-margin);
+}
+
+.editor-wrapper {
+  min-height: var(--doc-height);
+  background-color: white;
+  width: 8.27in;
+  margin: 0 auto;
+  display: block;
+  justify-content: center;
+  position: relative; /* Ensure positioning context for pseudo-element */
+  box-sizing: border-box;
+  word-break: break-word;
+  display: inline-block;
+}
+
+/* Remove focus outline */
+.ProseMirror {
+  outline: none !important;
+}
+
+.ProseMirror-focused {
+  outline: none !important;
+}
+
+/* Red highlight decoration */
+.red-highlight-decoration {
+  /* background-color: rgba(255, 0, 0, 0.2); */
+}
+
+ol {
+  display: flex;
+  flex-direction: column;
+}
+
+ol > li {
+  margin: 2px;
+}
+ul {
+  display: flex;
+  flex-direction: column;
+}
+
+ul > li {
+  margin: 2px;
+}
+
+li {
+  /* outline: 1px solid red; */
+}
+
+p {
+  /* outline: 1px solid green; */
+}
+
+.spacer {
+  /* background-color: yellow; */
+}
+/* 
+  In table cells, paragraph margins behave differently due to margin collapsing. 
+  We adjust margins to ensure proper spacing when exporting: 
+  - Reduce top margin for the first paragraph 
+  - Add bottom margin for the last paragraph 
+*/
+th p,
+th > h1,
+th > h2,
+th > h3,
+th > h4,
+th > h5,
+th > h6 {
+  margin-block-start: 2em;
+  margin-block-end: 0;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+}
+
+th p:first-child,
+th > h1:first-child,
+th > h2:first-child,
+th > h3:first-child,
+th > h4:first-child,
+th > h5:first-child,
+th > h6:first-child {
+  margin-block-start: 1em;
+}
+
+th p:last-child,
+th > h1:last-child,
+th > h2:last-child,
+th > h3:last-child,
+th > h4:last-child,
+th > h5:last-child,
+th > h6:last-child {
+  margin-block-end: 1em;
+}
