@@ -89,6 +89,15 @@ export default function App() {
           >
             Export DOCX
           </button>
+          <a
+            className="made-with"
+            href="https://10play.dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="10play.dev"
+          >
+            Made with ❤️ by 10play
+          </a>
         </div>
       </header>
 
