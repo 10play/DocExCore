@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   RiArrowGoBackLine,
   RiArrowGoForwardLine,
@@ -79,6 +79,28 @@ export default function App() {
       forceToolbarUpdate((v) => v + 1);
     });
   }, [controller]);
+
+  // Table dropdown state (ONLY TABLE PART)
+  const [showTableOptions, setShowTableOptions] = useState(false);
+  const [tableGridSize, setTableGridSize] = useState({ rows: 0, cols: 0 });
+  const tableDropdownRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        tableDropdownRef.current &&
+        !tableDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowTableOptions(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const isTableActive = controller.isActive("table");
+  const handleTableGridHover = (rows: number, cols: number) =>
+    setTableGridSize({ rows, cols });
 
   // Per-page overlays are rendered by PageBadgeOverlay component
 
@@ -236,13 +258,191 @@ export default function App() {
             <div className="toolbar-sep" />
 
             <div className="toolbar-group">
-              <button
-                className="tool-button"
-                title="Insert table"
-                onClick={() => controller.insertTable(3, 3)}
-              >
-                <RiTable2 />
-              </button>
+              <div className="table-dropdown-container" ref={tableDropdownRef}>
+                <button
+                  className={`tool-button ${isTableActive ? "active" : ""}`}
+                  title="Table options"
+                  onClick={() => setShowTableOptions((s) => !s)}
+                >
+                  <RiTable2 />
+                </button>
+                {showTableOptions && (
+                  <div className="table-dropdown">
+                    {!isTableActive ? (
+                      <div className="table-grid-selector">
+                        <div className="table-grid-label">Insert table</div>
+                        <div className="table-grid">
+                          {Array.from({ length: 5 }).map((_, rowIndex) => (
+                            <div
+                              key={`row-${rowIndex}`}
+                              className="table-grid-row"
+                            >
+                              {Array.from({ length: 5 }).map((_, colIndex) => (
+                                <button
+                                  key={`cell-${rowIndex}-${colIndex}`}
+                                  className={`table-grid-cell ${
+                                    rowIndex <= tableGridSize.rows &&
+                                    colIndex <= tableGridSize.cols
+                                      ? "table-grid-cell-active"
+                                      : ""
+                                  }`}
+                                  onMouseEnter={() =>
+                                    handleTableGridHover(rowIndex, colIndex)
+                                  }
+                                  onClick={() => {
+                                    controller.insertTable(
+                                      rowIndex + 1,
+                                      colIndex + 1,
+                                      true
+                                    );
+                                    setShowTableOptions(false);
+                                  }}
+                                  title={`${rowIndex + 1}×${
+                                    colIndex + 1
+                                  } table`}
+                                />
+                              ))}
+                            </div>
+                          ))}
+                        </div>
+                        <div className="table-dimensions-label">
+                          {tableGridSize.rows > 0 && tableGridSize.cols > 0
+                            ? `${tableGridSize.rows + 1}×${
+                                tableGridSize.cols + 1
+                              } table`
+                            : "Hover to select size"}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="table-controls">
+                        <div className="table-controls-section">
+                          <div className="table-controls-header">
+                            Column actions
+                          </div>
+                          <button
+                            className="table-menu-button"
+                            onClick={() => {
+                              controller.addColumnBefore();
+                              setShowTableOptions(false);
+                            }}
+                            title="Add column before"
+                          >
+                            Add column before
+                          </button>
+                          <button
+                            className="table-menu-button"
+                            onClick={() => {
+                              controller.addColumnAfter();
+                              setShowTableOptions(false);
+                            }}
+                            title="Add column after"
+                          >
+                            Add column after
+                          </button>
+                          <button
+                            className="table-menu-button destructive"
+                            onClick={() => {
+                              controller.deleteColumn();
+                              setShowTableOptions(false);
+                            }}
+                            title="Delete column"
+                          >
+                            Delete column
+                          </button>
+                        </div>
+
+                        <div className="table-controls-section">
+                          <div className="table-controls-header">
+                            Row actions
+                          </div>
+                          <button
+                            className="table-menu-button"
+                            onClick={() => {
+                              controller.addRowBefore();
+                              setShowTableOptions(false);
+                            }}
+                            title="Add row before"
+                          >
+                            Add row before
+                          </button>
+                          <button
+                            className="table-menu-button"
+                            onClick={() => {
+                              controller.addRowAfter();
+                              setShowTableOptions(false);
+                            }}
+                            title="Add row after"
+                          >
+                            Add row after
+                          </button>
+                          <button
+                            className="table-menu-button destructive"
+                            onClick={() => {
+                              controller.deleteRow();
+                              setShowTableOptions(false);
+                            }}
+                            title="Delete row"
+                          >
+                            Delete row
+                          </button>
+                        </div>
+
+                        <div className="table-controls-section">
+                          <div className="table-controls-header">
+                            Cell actions
+                          </div>
+                          <button
+                            className="table-menu-button"
+                            onClick={() => {
+                              controller.mergeCells();
+                              setShowTableOptions(false);
+                            }}
+                            title="Merge cells"
+                          >
+                            Merge cells
+                          </button>
+                          <button
+                            className="table-menu-button"
+                            onClick={() => {
+                              controller.splitCell();
+                              setShowTableOptions(false);
+                            }}
+                            title="Split cell"
+                          >
+                            Split cell
+                          </button>
+                          <button
+                            className="table-menu-button"
+                            onClick={() => {
+                              controller.toggleHeaderCell();
+                              setShowTableOptions(false);
+                            }}
+                            title="Toggle header cell"
+                          >
+                            Toggle header cell
+                          </button>
+                        </div>
+
+                        <div className="table-controls-section">
+                          <div className="table-controls-header">
+                            Table actions
+                          </div>
+                          <button
+                            className="table-menu-button destructive"
+                            onClick={() => {
+                              controller.deleteTable();
+                              setShowTableOptions(false);
+                            }}
+                            title="Delete table"
+                          >
+                            Delete table
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
               <button
                 className="tool-button dark"
                 title="Download DOCX"
@@ -269,8 +469,8 @@ export default function App() {
         />
         <PageBadgeOverlay
           pageGap={pageGap}
-          topOffsetPx={6}
-          rightNudgePx={-20}
+          topOffsetPx={12}
+          rightNudgePx={12}
         />
       </main>
     </div>

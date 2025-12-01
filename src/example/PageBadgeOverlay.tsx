@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { A4_HEIGHT_PX } from "../core/hooks/useDocHeight";
 
@@ -17,30 +17,49 @@ export interface PageBadgeOverlayProps {
  */
 export function PageBadgeOverlay({
   pageGap,
-  topOffsetPx = -25,
-  rightNudgePx = -37,
+  topOffsetPx = 12,
+  rightNudgePx = 12,
   label = "Made with ❤️ by 10play",
   href = "https://10play.dev",
 }: PageBadgeOverlayProps) {
-  // A very light re-render hook in case the doc height changes due to edits
+  const [container, setContainer] = useState<HTMLElement | null>(null);
+  const [pages, setPages] = useState<number>(1);
+  const [paddingTop, setPaddingTop] = useState<number>(0);
+
+  // After mount, find the editor wrapper and its scroll container,
+  // then keep the page count in sync with content height changes.
   useEffect(() => {
-    // noop: re-render will be driven by parent updates; kept for future extensibility
+    const wrapper = document.querySelector(".editor-wrapper") as
+      | HTMLElement
+      | null;
+    const scroller = wrapper?.parentElement as HTMLElement | null;
+    if (!wrapper || !scroller) return;
+    setContainer(scroller);
+
+    // capture scroller padding-top so overlays align with page top
+    const scrollerStyles = getComputedStyle(scroller);
+    setPaddingTop(parseFloat(scrollerStyles.paddingTop || "0") || 0);
+
+    const computePages = () => {
+      const contentHeight = wrapper.scrollHeight;
+      const p = Math.max(
+        1,
+        Math.ceil((contentHeight + pageGap) / (A4_HEIGHT_PX + pageGap))
+      );
+      setPages(p);
+    };
+
+    computePages();
+    const ro = new ResizeObserver(computePages);
+    ro.observe(wrapper);
+    return () => {
+      ro.disconnect();
+    };
   }, [pageGap]);
 
-  return useMemo(() => {
-    const wrapper = document.querySelector(".editor-wrapper") as HTMLElement | null;
-    const scroller = wrapper?.parentElement as HTMLElement | null;
-    if (!scroller) return null;
-
-    const rootStyles = getComputedStyle(document.documentElement);
-    const editorMargin = rootStyles.getPropertyValue("--editor-margin") || "0px";
-    const contentHeight = wrapper?.scrollHeight ?? 0;
-    const pages = Math.max(
-      1,
-      Math.ceil((contentHeight + pageGap) / (A4_HEIGHT_PX + pageGap))
-    );
-
-    const overlayNodes = Array.from({ length: pages }).map((_, idx) => (
+  const overlayNodes = useMemo(() => {
+    if (!container) return null;
+    return Array.from({ length: pages }).map((_, idx) => (
       <div
         key={`overlay-${idx}`}
         style={{
@@ -48,7 +67,7 @@ export function PageBadgeOverlay({
           zIndex: 10,
           left: "50%",
           transform: "translateX(-50%)",
-          top: `calc(${editorMargin} + ${idx * (A4_HEIGHT_PX + pageGap)}px + ${topOffsetPx}px)`,
+          top: `${paddingTop + idx * (A4_HEIGHT_PX + pageGap) + topOffsetPx}px`,
           width: "calc(8.27in - var(--editor-padding) * 2)",
           pointerEvents: "none",
         }}
@@ -57,7 +76,6 @@ export function PageBadgeOverlay({
           style={{
             display: "flex",
             justifyContent: "flex-end",
-            paddingRight: "var(--editor-padding)",
           }}
         >
           <a
@@ -82,8 +100,10 @@ export function PageBadgeOverlay({
         </div>
       </div>
     ));
-    return createPortal(overlayNodes, scroller);
-  }, [pageGap, topOffsetPx, rightNudgePx, label, href]);
+  }, [container, pages, pageGap, topOffsetPx, rightNudgePx, label, href, paddingTop]);
+
+  if (!container || !overlayNodes) return null;
+  return createPortal(overlayNodes, container);
 }
 
 
