@@ -1,6 +1,6 @@
 import { ElementParser } from "./ElementParser";
 import { FileChild, Paragraph } from "docx";
-import { ParagraphHandler, SegmentInfo } from "./paragraphHandler";
+import { ParagraphHandler, SegmentInfo } from "./ParagraphHandler";
 import { Exporter } from "../Exporter";
 
 export class ParagraphParser extends ElementParser {

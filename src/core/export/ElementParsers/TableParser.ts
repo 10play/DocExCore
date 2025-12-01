@@ -1,7 +1,7 @@
 import { ElementParser } from "./ElementParser";
 import { FileChild } from "docx";
 import * as docx from "docx";
-import { ParagraphHandler } from "./paragraphHandler";
+import { ParagraphHandler } from "./ParagraphHandler";
 import { pxToPt } from "../utils";
 import { nextListInstance } from "./util/listCounter";
 import { Exporter } from "../Exporter";

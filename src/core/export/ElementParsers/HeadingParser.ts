@@ -1,7 +1,7 @@
 // src/parsers/HeadingParser.ts
 import { ElementParser } from "./ElementParser";
 import { FileChild, Paragraph } from "docx";
-import { ParagraphHandler } from "./paragraphHandler";
+import { ParagraphHandler } from "./ParagraphHandler";
 import { Exporter } from "../Exporter";
 
 /**

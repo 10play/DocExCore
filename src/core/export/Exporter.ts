@@ -1,10 +1,10 @@
 import { ElementParser } from "./ElementParsers/ElementParser";
-import { OrderedListParser } from "./ElementParsers/listParser";
+import { OrderedListParser } from "./ElementParsers/OrderedListParser";
 import { ParagraphParser } from "./ElementParsers/ParagraphParser";
 import { Document, FileChild } from "docx";
 import * as docx from "docx";
-import { TableParser } from "./ElementParsers/tableParser";
-import { BulletListParser } from "./ElementParsers/bulletList";
+import { TableParser } from "./ElementParsers/TableParser";
+import { BulletListParser } from "./ElementParsers/BulletListParser";
 import {
   nextListInstance,
   resetListCounter,
@@ -14,7 +14,7 @@ import {
   numberedLevelList,
   unnumberedLevelList,
 } from "./ElementParsers/util/listConfig";
-import { HeadingParser } from "./ElementParsers/headingsParser";
+import { HeadingParser } from "./ElementParsers/HeadingParser";
 
 type ElementParserClass = (new (exporter: Exporter) => ElementParser) &
   Pick<typeof ElementParser, keyof typeof ElementParser>;

@@ -1,6 +1,6 @@
 // src/parsers/ListHandler.ts
 import { FileChild, Paragraph } from "docx";
-import { ParagraphHandler } from "./paragraphHandler";
+import { ParagraphHandler } from "./ParagraphHandler";
 import { MAX_NESTING } from "./util/listConfig";
 import { ListConfig, orderedConfig, bulletConfig } from "./util/listConfig";
 import { nextListInstance } from "./util/listCounter";

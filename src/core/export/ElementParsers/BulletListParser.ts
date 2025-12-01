@@ -1,6 +1,6 @@
 import { ElementParser } from "./ElementParser";
 import { FileChild } from "docx";
-import { ListHandler } from "./listHandlerParser";
+import { ListHandler } from "./ListHandler";
 import { bulletConfig } from "./util/listConfig";
 import { Exporter } from "../Exporter";
 
