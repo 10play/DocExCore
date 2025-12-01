@@ -1,7 +1,6 @@
 import { useEffect, useMemo, type CSSProperties } from "react";
 import {
   EditorContent,
-  EditorOptions,
   useEditor as useTipTapEditor,
   Editor,
 } from "@tiptap/react";
@@ -28,10 +27,7 @@ export interface DocexEditorProps {
   pagePadding?: number;
 }
 
-export function createDocexEditor(
-  controller: EditorController,
-  overrides?: Partial<EditorOptions>
-) {
+export function createDocexEditor(controller: EditorController) {
   return function DocexEditor({
     content = "",
     style = {},
@@ -70,20 +66,11 @@ export function createDocexEditor(
     );
 
     const editor = useTipTapEditor({
-      ...overrides,
-      extensions: overrides?.extensions ?? defaultExtensions,
+      extensions: defaultExtensions,
       content,
       editorProps: {
-        ...overrides?.editorProps,
         attributes: {
-          ...(overrides?.editorProps?.attributes ?? {}),
-          class: [
-            "editor",
-            overrides?.editorProps?.attributes?.class,
-            className,
-          ]
-            .filter(Boolean)
-            .join(" "),
+          class: ["editor", className].join(" "),
         },
       },
     });
@@ -93,6 +80,7 @@ export function createDocexEditor(
       controller.init(editor as Editor);
     }, [controller, editor]);
 
+    // @ts-expect-error hack to set the height of the editor
     useDocHeight(editor as Editor, pageGap);
     useCrossingElementsDecoration(editor as Editor, pageMargin, pageGap);
 
