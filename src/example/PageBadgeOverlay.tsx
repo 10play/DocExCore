@@ -8,6 +8,7 @@ export interface PageBadgeOverlayProps {
   rightNudgePx?: number; // negative values move it further right
   label?: string;
   href?: string;
+  firstPageExtraTopPx?: number; // additional top offset only for page 1
 }
 
 /**
@@ -21,24 +22,21 @@ export function PageBadgeOverlay({
   rightNudgePx = 12,
   label = "Made with ❤️ by 10play",
   href = "https://10play.dev",
+  firstPageExtraTopPx = 32,
 }: PageBadgeOverlayProps) {
   const [container, setContainer] = useState<HTMLElement | null>(null);
   const [pages, setPages] = useState<number>(1);
-  const [paddingTop, setPaddingTop] = useState<number>(0);
+  const [wrapperTop, setWrapperTop] = useState<number>(0);
 
   // After mount, find the editor wrapper and its scroll container,
   // then keep the page count in sync with content height changes.
   useEffect(() => {
-    const wrapper = document.querySelector(".editor-wrapper") as
-      | HTMLElement
-      | null;
+    const wrapper = document.querySelector(
+      ".editor-wrapper"
+    ) as HTMLElement | null;
     const scroller = wrapper?.parentElement as HTMLElement | null;
     if (!wrapper || !scroller) return;
     setContainer(scroller);
-
-    // capture scroller padding-top so overlays align with page top
-    const scrollerStyles = getComputedStyle(scroller);
-    setPaddingTop(parseFloat(scrollerStyles.paddingTop || "0") || 0);
 
     const computePages = () => {
       const contentHeight = wrapper.scrollHeight;
@@ -47,6 +45,7 @@ export function PageBadgeOverlay({
         Math.ceil((contentHeight + pageGap) / (A4_HEIGHT_PX + pageGap))
       );
       setPages(p);
+      setWrapperTop(wrapper.offsetTop);
     };
 
     computePages();
@@ -64,10 +63,15 @@ export function PageBadgeOverlay({
         key={`overlay-${idx}`}
         style={{
           position: "absolute",
-          zIndex: 10,
+          zIndex: 50,
           left: "50%",
           transform: "translateX(-50%)",
-          top: `${paddingTop + idx * (A4_HEIGHT_PX + pageGap) + topOffsetPx}px`,
+          top: `${
+            wrapperTop +
+            idx * (A4_HEIGHT_PX + pageGap) +
+            topOffsetPx +
+            (idx === 0 ? firstPageExtraTopPx : 0)
+          }px`,
           width: "calc(8.27in - var(--editor-padding) * 2)",
           pointerEvents: "none",
         }}
@@ -100,10 +104,18 @@ export function PageBadgeOverlay({
         </div>
       </div>
     ));
-  }, [container, pages, pageGap, topOffsetPx, rightNudgePx, label, href, paddingTop]);
+  }, [
+    container,
+    pages,
+    pageGap,
+    topOffsetPx,
+    rightNudgePx,
+    label,
+    href,
+    wrapperTop,
+    firstPageExtraTopPx,
+  ]);
 
   if (!container || !overlayNodes) return null;
   return createPortal(overlayNodes, container);
 }
-
-

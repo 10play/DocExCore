@@ -471,6 +471,7 @@ export default function App() {
           pageGap={pageGap}
           topOffsetPx={12}
           rightNudgePx={12}
+          firstPageExtraTopPx={32}
         />
       </main>
     </div>
