@@ -46,6 +46,7 @@ export const RedHighlightDecoration = Extension.create({
             // For each node, add a decoration
             const newDecorations = nodes.flatMap((node) => {
               return [
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 Decoration.widget(node.pos, (_view, _getPos) => {
                   const spacer = document.createElement("div");
                   spacer.style.height = `${node.marginToFix}px`;

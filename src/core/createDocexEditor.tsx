@@ -129,7 +129,8 @@ export function createDocexEditor(
             flex: 1,
             display: "flex",
             overflowY: "auto",
-            overflowX: "hidden",
+            overflowX: "auto",
+            paddingTop: 40,
           }}
         >
           <EditorContent editor={editor} className="editor-wrapper" />
