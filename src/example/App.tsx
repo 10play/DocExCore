@@ -6,14 +6,20 @@ import {
   RiItalic,
   RiUnderline,
   RiStrikethrough,
-  RiH1,
-  RiH2,
-  RiH3,
   RiListUnordered,
   RiListOrdered,
   RiTable2,
+  RiAlignLeft,
+  RiAlignCenter,
+  RiAlignRight,
+  RiDownloadLine,
+  RiH1,
+  RiH2,
+  RiH3,
+  RiParagraph,
 } from "react-icons/ri/index.js";
 import { createDocexEditor } from "../core/createDocexEditor";
+import { PageBadgeOverlay } from "./PageBadgeOverlay";
 import { EditorController } from "../core/editorController";
 import "./example.css";
 
@@ -64,6 +70,7 @@ export default function App() {
   const [pageGap] = useState(60);
   const [, forceToolbarUpdate] = useState(0);
   const [pagePadding] = useState(96);
+  // no overlay state: compute overlays deterministically each render
 
   // Re-render on editor state changes so active toolbar buttons update
   useEffect(() => {
@@ -73,173 +80,183 @@ export default function App() {
     });
   }, [controller]);
 
+  // Per-page overlays are rendered by PageBadgeOverlay component
+
   return (
     <div className="app-shell">
-      <header className="app-header">
-        <div>
-          <h1>DocEx Core</h1>
-          <p>Tiptap + Pagination + DOCX export</p>
-        </div>
-        <div className="header-actions">
-          <button
-            className="export-button"
-            onClick={() =>
-              controller.exportToDocx("docex-core-demo.docx", true)
-            }
-          >
-            Export DOCX
-          </button>
-          <a
-            className="made-with"
-            href="https://10play.dev"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="10play.dev"
-          >
-            Made with ❤️ by 10play
-          </a>
-        </div>
-      </header>
-
       <section className="control-panel">
         <div className="toolbar">
-          <div className="toolbar-group">
-            <button
-              className="tool-button"
-              title="Undo"
-              onClick={() => controller.undo()}
-            >
-              <RiArrowGoBackLine />
-            </button>
-            <button
-              className="tool-button"
-              title="Redo"
-              onClick={() => controller.redo()}
-            >
-              <RiArrowGoForwardLine />
-            </button>
+          <div className="toolbar-center">
+            <div className="toolbar-group">
+              <button
+                className="tool-button"
+                title="Undo"
+                onClick={() => controller.undo()}
+              >
+                <RiArrowGoBackLine />
+              </button>
+              <button
+                className="tool-button"
+                title="Redo"
+                onClick={() => controller.redo()}
+              >
+                <RiArrowGoForwardLine />
+              </button>
+            </div>
+
+            <div className="toolbar-sep" />
+
+            <div className="toolbar-group">
+              <button
+                className={`tool-button ${
+                  controller.isActive("bold") ? "active" : ""
+                }`}
+                aria-pressed={controller.isActive("bold")}
+                title="Bold"
+                onClick={() => controller.toggleBold()}
+              >
+                <RiBold />
+              </button>
+              <button
+                className={`tool-button ${
+                  controller.isActive("italic") ? "active" : ""
+                }`}
+                aria-pressed={controller.isActive("italic")}
+                title="Italic"
+                onClick={() => controller.toggleItalic()}
+              >
+                <RiItalic />
+              </button>
+              <button
+                className={`tool-button ${
+                  controller.isActive("underline") ? "active" : ""
+                }`}
+                aria-pressed={controller.isActive("underline")}
+                title="Underline"
+                onClick={() => controller.toggleUnderline()}
+              >
+                <RiUnderline />
+              </button>
+              <button
+                className={`tool-button ${
+                  controller.isActive("strike") ? "active" : ""
+                }`}
+                aria-pressed={controller.isActive("strike")}
+                title="Strikethrough"
+                onClick={() => controller.toggleStrike()}
+              >
+                <RiStrikethrough />
+              </button>
+            </div>
+
+            <div className="toolbar-sep" />
+
+            <div className="toolbar-group">
+              <button
+                className={`tool-button ${
+                  controller.isActive("paragraph") ? "active" : ""
+                }`}
+                aria-pressed={controller.isActive("paragraph")}
+                title="Text"
+                onClick={() => controller.setParagraph()}
+              >
+                <RiParagraph />
+              </button>
+              <button
+                className={`tool-button ${
+                  controller.isHeadingActive(1) ? "active" : ""
+                }`}
+                aria-pressed={controller.isHeadingActive(1)}
+                title="Heading 1"
+                onClick={() => controller.toggleHeading(1)}
+              >
+                <RiH1 />
+              </button>
+              <button
+                className={`tool-button ${
+                  controller.isHeadingActive(2) ? "active" : ""
+                }`}
+                aria-pressed={controller.isHeadingActive(2)}
+                title="Heading 2"
+                onClick={() => controller.toggleHeading(2)}
+              >
+                <RiH2 />
+              </button>
+              <button
+                className={`tool-button ${
+                  controller.isHeadingActive(3) ? "active" : ""
+                }`}
+                aria-pressed={controller.isHeadingActive(3)}
+                title="Heading 3"
+                onClick={() => controller.toggleHeading(3)}
+              >
+                <RiH3 />
+              </button>
+            </div>
+
+            <div className="toolbar-sep" />
+
+            <div className="toolbar-group">
+              <button className="tool-button" title="Align left" disabled>
+                <RiAlignLeft />
+              </button>
+              <button className="tool-button" title="Align center" disabled>
+                <RiAlignCenter />
+              </button>
+              <button className="tool-button" title="Align right" disabled>
+                <RiAlignRight />
+              </button>
+            </div>
+
+            <div className="toolbar-sep" />
+
+            <div className="toolbar-group">
+              <button
+                className={`tool-button ${
+                  controller.isActive("bulletList") ? "active" : ""
+                }`}
+                aria-pressed={controller.isActive("bulletList")}
+                title="Bulleted list"
+                onClick={() => controller.toggleBulletList()}
+              >
+                <RiListUnordered />
+              </button>
+              <button
+                className={`tool-button ${
+                  controller.isActive("orderedList") ? "active" : ""
+                }`}
+                aria-pressed={controller.isActive("orderedList")}
+                title="Numbered list"
+                onClick={() => controller.toggleOrderedList()}
+              >
+                <RiListOrdered />
+              </button>
+            </div>
+
+            <div className="toolbar-sep" />
+
+            <div className="toolbar-group">
+              <button
+                className="tool-button"
+                title="Insert table"
+                onClick={() => controller.insertTable(3, 3)}
+              >
+                <RiTable2 />
+              </button>
+              <button
+                className="tool-button dark"
+                title="Download DOCX"
+                onClick={() =>
+                  controller.exportToDocx("docex-core-demo.docx", true)
+                }
+              >
+                <RiDownloadLine />
+              </button>
+            </div>
           </div>
-
-          <div className="toolbar-sep" />
-
-          <div className="toolbar-group">
-            <button
-              className={`tool-button ${
-                controller.isActive("bold") ? "active" : ""
-              }`}
-              aria-pressed={controller.isActive("bold")}
-              title="Bold"
-              onClick={() => controller.toggleBold()}
-            >
-              <RiBold />
-            </button>
-            <button
-              className={`tool-button ${
-                controller.isActive("italic") ? "active" : ""
-              }`}
-              aria-pressed={controller.isActive("italic")}
-              title="Italic"
-              onClick={() => controller.toggleItalic()}
-            >
-              <RiItalic />
-            </button>
-            <button
-              className={`tool-button ${
-                controller.isActive("underline") ? "active" : ""
-              }`}
-              aria-pressed={controller.isActive("underline")}
-              title="Underline"
-              onClick={() => controller.toggleUnderline()}
-            >
-              <RiUnderline />
-            </button>
-            <button
-              className={`tool-button ${
-                controller.isActive("strike") ? "active" : ""
-              }`}
-              aria-pressed={controller.isActive("strike")}
-              title="Strikethrough"
-              onClick={() => controller.toggleStrike()}
-            >
-              <RiStrikethrough />
-            </button>
+          <div className="toolbar-right">
+            {/* moved “Made with ❤️ by 10play” into per-page overlay */}
           </div>
-
-          <div className="toolbar-sep" />
-
-          <div className="toolbar-group">
-            <button
-              className={`tool-button ${
-                controller.isHeadingActive(1) ? "active" : ""
-              }`}
-              aria-pressed={controller.isHeadingActive(1)}
-              title="Heading 1"
-              onClick={() => controller.toggleHeading(1)}
-            >
-              <RiH1 />
-            </button>
-            <button
-              className={`tool-button ${
-                controller.isHeadingActive(2) ? "active" : ""
-              }`}
-              aria-pressed={controller.isHeadingActive(2)}
-              title="Heading 2"
-              onClick={() => controller.toggleHeading(2)}
-            >
-              <RiH2 />
-            </button>
-            <button
-              className={`tool-button ${
-                controller.isHeadingActive(3) ? "active" : ""
-              }`}
-              aria-pressed={controller.isHeadingActive(3)}
-              title="Heading 3"
-              onClick={() => controller.toggleHeading(3)}
-            >
-              <RiH3 />
-            </button>
-          </div>
-
-          <div className="toolbar-sep" />
-
-          <div className="toolbar-group">
-            <button
-              className={`tool-button ${
-                controller.isActive("bulletList") ? "active" : ""
-              }`}
-              aria-pressed={controller.isActive("bulletList")}
-              title="Bulleted list"
-              onClick={() => controller.toggleBulletList()}
-            >
-              <RiListUnordered />
-            </button>
-            <button
-              className={`tool-button ${
-                controller.isActive("orderedList") ? "active" : ""
-              }`}
-              aria-pressed={controller.isActive("orderedList")}
-              title="Numbered list"
-              onClick={() => controller.toggleOrderedList()}
-            >
-              <RiListOrdered />
-            </button>
-          </div>
-
-          <div className="toolbar-sep" />
-
-          <div className="toolbar-group">
-            <button
-              className="tool-button"
-              title="Insert table"
-              onClick={() => controller.insertTable(3, 3)}
-            >
-              <RiTable2 />
-            </button>
-          </div>
-
-          <div className="toolbar-sep" />
-
-          {/* layout controls removed */}
         </div>
       </section>
 
@@ -249,6 +266,11 @@ export default function App() {
           pageGap={pageGap}
           pageMargin={pageMargin}
           pagePadding={pagePadding}
+        />
+        <PageBadgeOverlay
+          pageGap={pageGap}
+          topOffsetPx={6}
+          rightNudgePx={-20}
         />
       </main>
     </div>
