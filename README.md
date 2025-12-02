@@ -20,7 +20,7 @@ This folder contains the stripped-down version of the DocEx editor showcasing on
 - `table.css` – table-specific styles shared between the editor and the exporter.
 - `index.css` – document-level resets used by the Vite app shell.
 
-### Example experience (`src/example`)
+### Example (`src/example`)
 
 - `App.tsx` – minimal shell that shows how to wire the controller into UI (toolbar buttons, layout sliders, DOCX export button) plus a sample document.
 - `example.css` – styles for the shell + toolbar/ribbon UI. This file is intentionally separate so you can swap it out without affecting TipTap.
