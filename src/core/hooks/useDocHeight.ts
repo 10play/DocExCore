@@ -27,7 +27,7 @@ export const useDocHeight = throttle((editor: Editor, pageGap: number) => {
   // Round to prevent multiple pages
   const docHeight = Math.round(editor.view.dom.scrollHeight);
   // get the nearest cieled number of A4 pages
-  const pages = Math.ceil(docHeight / A4_HEIGHT_PX);
+  const pages = Math.ceil((docHeight + pageGap) / (A4_HEIGHT_PX + pageGap));
   // the new max height is the height of the editor + the height of the pages
   const minHeight = pages * A4_HEIGHT_PX + pages * pageGap - pageGap;
 

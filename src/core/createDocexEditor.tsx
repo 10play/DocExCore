@@ -97,7 +97,7 @@ export function createDocexEditor(controller: EditorController) {
 
     if (!editor) return null;
 
-    const pageCount = Math.ceil(editor.view.dom.clientHeight / A4_HEIGHT_PX);
+    const pageCount = Math.ceil((editor.view.dom.clientHeight + pageGap) / (A4_HEIGHT_PX + pageGap));
 
     return (
       <div
