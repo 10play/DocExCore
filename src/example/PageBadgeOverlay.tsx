@@ -39,7 +39,9 @@ export function PageBadgeOverlay({
     setContainer(wrapper);
 
     const computePages = () => {
-      const contentHeight = wrapper.scrollHeight;
+      // Use clientHeight to reflect the actual rendered height (driven by --doc-height),
+      // ensuring the overlay updates when the document shrinks as well as when it grows.
+      const contentHeight = wrapper.clientHeight;
       const p = Math.max(
         1,
         Math.ceil((contentHeight + pageGap) / (A4_HEIGHT_PX + pageGap))
