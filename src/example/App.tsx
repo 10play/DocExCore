@@ -516,9 +516,7 @@ export default function App() {
               </button>
             </div>
           </div>
-          <div className="toolbar-right">
-            {/* moved “Made with ❤️ by 10play” into per-page overlay */}
-          </div>
+          <div className="toolbar-right"></div>
         </div>
       </section>
 
