@@ -129,6 +129,7 @@ export function createDocexEditor(controller: EditorController) {
                 position: "absolute",
                 top: `${(idx + 1) * (A4_HEIGHT_PX + pageGap) - pageGap}px`,
                 width: "100%",
+                minWidth: "8.27in",
                 height: pageGap,
                 background: "#f8f9fa",
               }}
