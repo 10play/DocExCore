@@ -54,7 +54,8 @@
   gap: 0;
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 100;
+  overflow: visible;
   backdrop-filter: none;
   box-shadow: none;
 }
@@ -75,16 +76,27 @@
   max-width: 1100px;
   margin: 0 auto;
   position: relative;
+  overflow: visible;
 }
 .toolbar-center {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+  scrollbar-width: none; /* Firefox: hide scrollbar */
+  -ms-overflow-style: none; /* IE/Edge: hide scrollbar */
+}
+.toolbar-center::-webkit-scrollbar {
+  display: none; /* WebKit: hide scrollbar */
 }
 .toolbar-group {
   display: flex;
   align-items: center;
   gap: 0.25rem;
+  flex: 0 0 auto; /* prevent shrinking so content overflows and scrolls */
 }
 .toolbar-sep.break {
   flex-basis: 100%;
@@ -399,6 +411,9 @@
     font-size: 0.7rem;
     height: 18px;
   }
+  .toolbar-sep {
+    display: none;
+  }
 }
 
 /* Table dropdown (ONLY TABLE PART) */
@@ -409,7 +424,7 @@
   position: absolute;
   top: 28px;
   left: 0;
-  z-index: 20;
+  z-index: 1000;
   min-width: auto;
   width: max-content;
   background: #ffffff;
