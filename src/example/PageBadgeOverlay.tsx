@@ -26,7 +26,6 @@ export function PageBadgeOverlay({
 }: PageBadgeOverlayProps) {
   const [container, setContainer] = useState<HTMLElement | null>(null);
   const [pages, setPages] = useState<number>(1);
-  const [wrapperTop, setWrapperTop] = useState<number>(0);
 
   // After mount, find the editor wrapper and its scroll container,
   // then keep the page count in sync with content height changes.
@@ -34,9 +33,10 @@ export function PageBadgeOverlay({
     const wrapper = document.querySelector(
       ".editor-wrapper"
     ) as HTMLElement | null;
-    const scroller = wrapper?.parentElement as HTMLElement | null;
-    if (!wrapper || !scroller) return;
-    setContainer(scroller);
+    if (!wrapper) return;
+    // Position overlays relative to the editor wrapper so horizontal scroll
+    // keeps badges aligned with the page content.
+    setContainer(wrapper);
 
     const computePages = () => {
       const contentHeight = wrapper.scrollHeight;
@@ -45,7 +45,6 @@ export function PageBadgeOverlay({
         Math.ceil((contentHeight + pageGap) / (A4_HEIGHT_PX + pageGap))
       );
       setPages(p);
-      setWrapperTop(wrapper.offsetTop);
     };
 
     computePages();
@@ -64,15 +63,14 @@ export function PageBadgeOverlay({
         style={{
           position: "absolute",
           zIndex: 50,
-          left: "50%",
-          transform: "translateX(-50%)",
+          // Align horizontally with the white page area inside wrapper padding
+          left: "var(--editor-padding)",
           top: `${
-            wrapperTop +
             idx * (A4_HEIGHT_PX + pageGap) +
             topOffsetPx +
             (idx === 0 ? firstPageExtraTopPx : 0)
           }px`,
-          width: "calc(8.27in - var(--editor-padding) * 2)",
+          width: "calc(100% - var(--editor-padding) * 2)",
           pointerEvents: "none",
         }}
       >
@@ -112,7 +110,6 @@ export function PageBadgeOverlay({
     rightNudgePx,
     label,
     href,
-    wrapperTop,
     firstPageExtraTopPx,
   ]);
 
