@@ -65,6 +65,7 @@ th > h6 {
   box-sizing: border-box;
   word-break: break-word;
   display: inline-block;
+  flex-shrink: 0; /* prevent shrinking inside flex containers so it overflows instead */
 }
 
 /* Remove focus outline */
