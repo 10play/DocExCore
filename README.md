@@ -1,7 +1,9 @@
 # DocEx Core
 
-This folder contains the stripped-down version of the DocEx editor showcasing only the pagination logic and the DOCX export pipeline. It is a self-contained Vite + React project that can become its own repository.
+Tiptap Editor with Pagination and Docx Export 
 
+See demo https://10play.github.io/DocExCore/  
+Read Blog https://www.10play.dev/blog/docex
 ## What is included
 
 ### Core editor (`src/core`)
